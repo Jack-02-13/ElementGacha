@@ -6,13 +6,9 @@ on:
     branches: ["main", "master"]
 
 jobs:
-  build:
-    name: Build (${{ matrix.os }})
-    runs-on: ${{ matrix.os }}
-    strategy:
-      fail-fast: false
-      matrix:
-        os: [windows-latest, macos-latest]
+  build-windows:
+    name: Build (windows-latest)
+    runs-on: windows-latest
 
     steps:
       - name: Checkout
@@ -48,13 +44,71 @@ jobs:
       - name: Upload one-file artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ElementGacha-OneFile-${{ matrix.os }}
+          name: ElementGacha-OneFile-windows-latest
           path: |
             dist/ElementGacha_OneFile*
 
       - name: Upload one-folder artifact
         uses: actions/upload-artifact@v4
         with:
-          name: ElementGacha-Folder-${{ matrix.os }}
+          name: ElementGacha-Folder-windows-latest
           path: |
             dist/ElementGacha/**
+
+  build-macos-app:
+    name: Build App (macos-latest)
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build macOS .app (onedir)
+        shell: bash
+        run: |
+          ADD_DATA_ARGS=()
+          for f in starfield.png earth.png Earth.png earth.jpg earth.jpeg earth.gif earth.webp; do
+            if [ -f "$f" ]; then
+              ADD_DATA_ARGS+=(--add-data "$f:.")
+            fi
+          done
+          if [ -d "data" ]; then
+            while IFS= read -r -d '' jf; do
+              ADD_DATA_ARGS+=(--add-data "$jf:$(dirname "$jf")")
+            done < <(find data -type f -name "*.json" -print0)
+          fi
+
+          pyinstaller main.py \
+            --name ElementGacha \
+            --windowed \
+            --onedir \
+            "${ADD_DATA_ARGS[@]}"
+
+      - name: Verify .app exists
+        shell: bash
+        run: |
+          test -d dist/ElementGacha.app
+
+      - name: Zip macOS .app
+        shell: bash
+        run: |
+          cd dist
+          zip -r ElementGacha-macos-app.zip ElementGacha.app
+
+      - name: Upload macOS App artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ElementGacha-macos-latest
+          path: |
+            dist/ElementGacha-macos-app.zip
