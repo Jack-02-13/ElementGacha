@@ -5,8 +5,14 @@ from pathlib import Path
 from typing import TYPE_CHECKING
 
 import config
-from PIL import Image, ImageTk
 from ui.gradient_frame import GradientFrame
+
+try:
+    from PIL import Image, ImageTk
+
+    PIL_AVAILABLE = True
+except Exception:
+    PIL_AVAILABLE = False
 
 if TYPE_CHECKING:
     from main import ElementGachaApp
@@ -137,6 +143,8 @@ class MainMenu(GradientFrame):
         self.refresh_texts()
 
     def _add_earth_decorations(self) -> None:
+        if not PIL_AVAILABLE:
+            return
         project_root = Path(__file__).resolve().parents[1]
         candidates = (
             "earth.png",
