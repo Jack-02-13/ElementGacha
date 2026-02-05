@@ -44,7 +44,7 @@ class ElementGachaApp(TkBase):
         self.rng = random.Random(seed)
         self.gacha_engine = GachaEngine(ELEMENTS, rng=self.rng)
 
-        container = tk.Frame(self)
+        container = tk.Frame(self, bg=config.SPACE_BLUE_BG)
         container.pack(fill="both", expand=True)
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)

@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import random
 import tkinter as tk
 from typing import TYPE_CHECKING
 
@@ -89,6 +90,7 @@ class CollectionView(GradientFrame):
         self.periodic_card_widgets: dict[int, tuple[tk.Frame, tk.Label, tk.Label, tk.Label]] = {}
         self.periodic_legend_title_label: tk.Label | None = None
         self.periodic_legend_labels: dict[str, tk.Label] = {}
+        self._random_detail_initialized = False
 
         top = tk.Frame(root, bg=root_bg)
         top.pack(fill="x", pady=8, padx=12)
@@ -105,7 +107,7 @@ class CollectionView(GradientFrame):
         self._style_button(self.mode_periodic_button)
         self.mode_periodic_button.pack(side="left")
 
-        self.progress_label = tk.Label(top, text="", font=(config.FONT_ZH, 12, "bold"), bg=root_bg, fg="#111111")
+        self.progress_label = tk.Label(top, text="", font=(config.FONT_ZH, 12, "bold"), bg=root_bg, fg=config.SPACE_BLUE_FG)
         self.progress_label.pack(side="right")
 
         main_area = tk.Frame(root, bg=root_bg)
@@ -147,10 +149,10 @@ class CollectionView(GradientFrame):
 
     def _style_button(self, button: tk.Button) -> None:
         button.configure(
-            bg="SystemButtonFace",
-            fg="SystemButtonText",
-            activebackground="SystemButtonFace",
-            activeforeground="SystemButtonText",
+            bg=config.BUTTON_BG,
+            fg=config.BUTTON_FG,
+            activebackground=config.BUTTON_ACTIVE_BG,
+            activeforeground=config.BUTTON_ACTIVE_FG,
             relief="raised",
             bd=1,
             cursor="hand2",
@@ -248,18 +250,24 @@ class CollectionView(GradientFrame):
             symbol_font = (config.FONT_EN, 14, "bold")
             footer_font = (config.FONT_ZH, 8)
 
-        header = tk.Label(card, bg=bg, fg="#111111", font=header_font)
+        header = tk.Label(card, bg=bg, fg=config.ELEMENT_CARD_FG, font=header_font)
         header.place(relx=0.5, rely=0.15, anchor="center")
 
-        symbol = tk.Label(card, bg=bg, fg="#111111", font=symbol_font)
+        symbol = tk.Label(card, bg=bg, fg=config.ELEMENT_CARD_FG, font=symbol_font)
         symbol.place(relx=0.5, rely=0.5, anchor="center")
 
-        footer = tk.Label(card, bg=bg, fg="#111111", font=footer_font)
+        footer = tk.Label(card, bg=bg, fg=config.ELEMENT_CARD_FG, font=footer_font)
         footer.place(relx=0.5, rely=0.86, anchor="center")
 
         def on_click(_: tk.Event[tk.Misc]) -> None:
             owned_count = self.app.state.owned.get(element.atomic_number, 0)
-            self.detail_panel.show_element(element, owned_count, reveal=owned_count > 0)
+            detail_color = category_color if mode == "periodic" else None
+            self.detail_panel.show_element(
+                element,
+                owned_count,
+                reveal=owned_count > 0,
+                card_color=detail_color,
+            )
 
         for widget in (card, header, symbol, footer):
             widget.configure(cursor="hand2")
@@ -280,7 +288,7 @@ class CollectionView(GradientFrame):
             section = tk.Frame(parent, bg=config.SPACE_BLUE_BG)
             section.pack(fill="x", pady=(0, 10))
 
-            section_label = tk.Label(section, font=(config.FONT_ZH, 12, "bold"), bg=config.SPACE_BLUE_BG, fg="#111111")
+            section_label = tk.Label(section, font=(config.FONT_ZH, 12, "bold"), bg=config.SPACE_BLUE_BG, fg=config.SPACE_BLUE_FG)
             section_label.pack(anchor="w", pady=(0, 4))
             self.rarity_section_labels[rarity] = section_label
 
@@ -301,10 +309,10 @@ class CollectionView(GradientFrame):
         table_shell = tk.Frame(parent, bg=config.SPACE_BLUE_BG)
         table_shell.pack(anchor="nw")
 
-        legend_block = tk.LabelFrame(table_shell, padx=8, pady=6, bg=config.SPACE_BLUE_BG, fg="#111111")
+        legend_block = tk.LabelFrame(table_shell, padx=8, pady=6, bg=config.SPACE_BLUE_BG, fg=config.SPACE_BLUE_FG)
         legend_block.pack(fill="x", pady=(0, 8))
         self.periodic_legend_title_label = tk.Label(
-            legend_block, font=(config.FONT_ZH, 10, "bold"), bg=config.SPACE_BLUE_BG, fg="#111111"
+            legend_block, font=(config.FONT_ZH, 10, "bold"), bg=config.SPACE_BLUE_BG, fg=config.SPACE_BLUE_FG
         )
         self.periodic_legend_title_label.pack(anchor="w", pady=(0, 4))
 
@@ -324,7 +332,7 @@ class CollectionView(GradientFrame):
                 pady=1,
             )
             tk.Label(item, text="  ", bg=config.PERIODIC_CATEGORY_COLORS[category], bd=1, relief="solid").pack(side="left")
-            text_label = tk.Label(item, font=(config.FONT_ZH, 9), bg=config.SPACE_BLUE_BG, fg="#111111")
+            text_label = tk.Label(item, font=(config.FONT_ZH, 9), bg=config.SPACE_BLUE_BG, fg=config.SPACE_BLUE_FG)
             text_label.pack(side="left", padx=(4, 0))
             self.periodic_legend_labels[category] = text_label
 
@@ -332,14 +340,14 @@ class CollectionView(GradientFrame):
         table.pack(anchor="nw")
 
         for group in range(1, 19):
-            tk.Label(table, text=str(group), font=(config.FONT_EN, 7, "bold"), width=3, bg=config.SPACE_BLUE_BG, fg="#111111").grid(row=0, column=group, pady=(0, 2))
+            tk.Label(table, text=str(group), font=(config.FONT_EN, 7, "bold"), width=3, bg=config.SPACE_BLUE_BG, fg=config.SPACE_BLUE_FG).grid(row=0, column=group, pady=(0, 2))
         for row in range(1, 8):
-            tk.Label(table, text=f"P{row}", font=(config.FONT_EN, 7, "bold"), width=3, bg=config.SPACE_BLUE_BG, fg="#111111").grid(row=row, column=0, sticky="e")
-        tk.Label(table, text="La-Lu", font=(config.FONT_EN, 7, "bold"), width=3, bg=config.SPACE_BLUE_BG, fg="#111111").grid(row=8, column=0, sticky="e")
-        tk.Label(table, text="Ac-Lr", font=(config.FONT_EN, 7, "bold"), width=3, bg=config.SPACE_BLUE_BG, fg="#111111").grid(row=9, column=0, sticky="e")
+            tk.Label(table, text=f"P{row}", font=(config.FONT_EN, 7, "bold"), width=3, bg=config.SPACE_BLUE_BG, fg=config.SPACE_BLUE_FG).grid(row=row, column=0, sticky="e")
+        tk.Label(table, text="La-Lu", font=(config.FONT_EN, 7, "bold"), width=3, bg=config.SPACE_BLUE_BG, fg=config.SPACE_BLUE_FG).grid(row=8, column=0, sticky="e")
+        tk.Label(table, text="Ac-Lr", font=(config.FONT_EN, 7, "bold"), width=3, bg=config.SPACE_BLUE_BG, fg=config.SPACE_BLUE_FG).grid(row=9, column=0, sticky="e")
 
-        tk.Label(table, text="57-71", font=(config.FONT_EN, 7), width=4, fg="#9ab7e3", bg=config.SPACE_BLUE_BG).grid(row=6, column=3)
-        tk.Label(table, text="89-103", font=(config.FONT_EN, 7), width=4, fg="#9ab7e3", bg=config.SPACE_BLUE_BG).grid(row=7, column=3)
+        tk.Label(table, text="57-71", font=(config.FONT_EN, 7), width=4, fg=config.SPACE_BLUE_FG, bg=config.SPACE_BLUE_BG).grid(row=6, column=3)
+        tk.Label(table, text="89-103", font=(config.FONT_EN, 7), width=4, fg=config.SPACE_BLUE_FG, bg=config.SPACE_BLUE_BG).grid(row=7, column=3)
 
         for element in ELEMENTS:
             position = PERIODIC_POSITIONS.get(element.atomic_number)
@@ -398,6 +406,26 @@ class CollectionView(GradientFrame):
         # Keep both modes up to date, so switching modes doesn't trigger reflow/flicker.
         self._update_cards(self.rarity_card_widgets, periodic_mode=False)
         self._update_cards(self.periodic_card_widgets, periodic_mode=True)
+        if not self._random_detail_initialized:
+            self._show_random_detail()
+
+    def _show_random_detail(self) -> None:
+        owned_elements = [element for element in ELEMENTS if self.app.state.owned.get(element.atomic_number, 0) > 0]
+        pool = owned_elements if owned_elements else ELEMENTS
+        if not pool:
+            return
+        element = random.choice(pool)
+        owned_count = self.app.state.owned.get(element.atomic_number, 0)
+        detail_color: str | None = None
+        if self.mode_var.get() == "periodic":
+            detail_color = config.PERIODIC_CATEGORY_COLORS[self._periodic_category(element.atomic_number)]
+        self.detail_panel.show_element(
+            element,
+            owned_count,
+            reveal=owned_count > 0,
+            card_color=detail_color,
+        )
+        self._random_detail_initialized = True
 
     def refresh_texts(self) -> None:
         self.back_button.configure(text=self.app.tr("back_to_menu"))

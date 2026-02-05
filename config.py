@@ -1,16 +1,28 @@
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 
 APP_TITLE = "元素抽卡收集"
 WINDOW_SIZE = "1100x760"
 
-FONT_ZH = "Microsoft JhengHei"
-FONT_EN = "Segoe UI"
-SPACE_BLUE_BG = "#ffffff"
-SPACE_BLUE_FG = "#111111"
-SPACE_BLUE_GRADIENT_TOP = "#ffffff"
-SPACE_BLUE_GRADIENT_BOTTOM = "#ffffff"
+if sys.platform == "darwin":
+    FONT_ZH = "PingFang TC"
+    FONT_EN = "Helvetica Neue"
+else:
+    FONT_ZH = "Microsoft JhengHei"
+    FONT_EN = "Segoe UI"
+
+SPACE_BLUE_BG = "#000000"
+SPACE_BLUE_FG = "#ffffff"
+SPACE_BLUE_GRADIENT_TOP = "#000000"
+SPACE_BLUE_GRADIENT_BOTTOM = "#000000"
+
+BUTTON_BG = "#1f1f1f"
+BUTTON_FG = "#ffffff"
+BUTTON_ACTIVE_BG = "#2b2b2b"
+BUTTON_ACTIVE_FG = "#ffffff"
+ELEMENT_CARD_FG = "#111111"
 
 UNLOCK_CODE = "ZIMEI-UNLOCK-2026"
 

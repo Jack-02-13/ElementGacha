@@ -76,7 +76,7 @@ class MainMenu(GradientFrame):
         self._earth_labels: list[tk.Label] = []
         root = self.body
         panel_bg = config.SPACE_BLUE_BG
-        text_fg = "#111111"
+        text_fg = config.SPACE_BLUE_FG
 
         self.title_label = tk.Label(
             root,
@@ -94,6 +94,7 @@ class MainMenu(GradientFrame):
             cursor="hand2",
             command=self.show_how_to_play,
         )
+        self._style_button(self.help_button)
         self.help_button.place(relx=0.98, y=14, anchor="ne")
 
         button_frame = tk.Frame(root, bg=panel_bg, padx=12, pady=12)
@@ -107,6 +108,7 @@ class MainMenu(GradientFrame):
             cursor="hand2",
             command=lambda: self.app.show_frame("GachaView"),
         )
+        self._style_button(self.start_button)
         self.start_button.pack(pady=8)
 
         self.collection_button = tk.Button(
@@ -117,6 +119,7 @@ class MainMenu(GradientFrame):
             cursor="hand2",
             command=lambda: self.app.show_frame("CollectionView"),
         )
+        self._style_button(self.collection_button)
         self.collection_button.pack(pady=8)
 
         self.settings_button = tk.Button(
@@ -127,6 +130,7 @@ class MainMenu(GradientFrame):
             cursor="hand2",
             command=lambda: self.app.show_frame("SettingsView"),
         )
+        self._style_button(self.settings_button)
         self.settings_button.pack(pady=8)
 
         self.exit_button = tk.Button(
@@ -137,10 +141,21 @@ class MainMenu(GradientFrame):
             cursor="hand2",
             command=self.app.on_close,
         )
+        self._style_button(self.exit_button)
         self.exit_button.pack(pady=8)
 
         self._add_earth_decorations()
         self.refresh_texts()
+
+    def _style_button(self, button: tk.Button) -> None:
+        button.configure(
+            bg=config.BUTTON_BG,
+            fg=config.BUTTON_FG,
+            activebackground=config.BUTTON_ACTIVE_BG,
+            activeforeground=config.BUTTON_ACTIVE_FG,
+            relief="raised",
+            bd=1,
+        )
 
     def _add_earth_decorations(self) -> None:
         if not PIL_AVAILABLE:
@@ -215,7 +230,7 @@ class MainMenu(GradientFrame):
             text=title,
             font=(config.FONT_ZH, 18, "bold"),
             bg=config.SPACE_BLUE_BG,
-            fg="#111111",
+            fg=config.SPACE_BLUE_FG,
         ).pack(anchor="w", pady=(0, 12))
 
         tk.Label(
@@ -225,7 +240,7 @@ class MainMenu(GradientFrame):
             anchor="nw",
             font=(config.FONT_ZH, 13),
             bg=config.SPACE_BLUE_BG,
-            fg="#111111",
+            fg=config.SPACE_BLUE_FG,
             wraplength=650,
         ).pack(fill="both", expand=True)
 
@@ -237,6 +252,7 @@ class MainMenu(GradientFrame):
             cursor="hand2",
             command=dialog.destroy,
         )
+        self._style_button(close_btn)
         close_btn.pack(anchor="e", pady=(10, 0))
 
         dialog.grab_set()

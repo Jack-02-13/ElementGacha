@@ -31,21 +31,21 @@ class GachaView(GradientFrame):
         self.back_button = tk.Button(top, font=(config.FONT_ZH, 10), command=lambda: self.app.show_frame("MainMenu"))
         self._style_button(self.back_button)
         self.back_button.pack(side="left")
-        self.ticket_label = tk.Label(top, text="", font=(config.FONT_ZH, 12, "bold"), bg=root_bg, fg="#111111")
+        self.ticket_label = tk.Label(top, text="", font=(config.FONT_ZH, 12, "bold"), bg=root_bg, fg=config.SPACE_BLUE_FG)
         self.ticket_label.pack(side="right")
 
         info = tk.Frame(root, bg=root_bg)
         info.pack(fill="x", padx=12, pady=2)
-        self.speed_label = tk.Label(info, text="", font=(config.FONT_ZH, 11), bg=root_bg, fg="#111111")
+        self.speed_label = tk.Label(info, text="", font=(config.FONT_ZH, 11), bg=root_bg, fg=config.SPACE_BLUE_FG)
         self.speed_label.pack(side="left")
-        self.stats_label = tk.Label(info, text="", font=(config.FONT_ZH, 11), bg=root_bg, fg="#111111")
+        self.stats_label = tk.Label(info, text="", font=(config.FONT_ZH, 11), bg=root_bg, fg=config.SPACE_BLUE_FG)
         self.stats_label.pack(side="right")
 
         self.draw_button_frame = tk.Frame(root, bg=root_bg)
         self.draw_button_frame.pack(fill="x", padx=12, pady=10)
-        self.draw_count_title = tk.Label(self.draw_button_frame, font=(config.FONT_ZH, 11), bg=root_bg, fg="#111111")
+        self.draw_count_title = tk.Label(self.draw_button_frame, font=(config.FONT_ZH, 11), bg=root_bg, fg=config.SPACE_BLUE_FG)
 
-        self.notice_label = tk.Label(root, text="", fg="#8a2c2c", bg=root_bg, font=(config.FONT_ZH, 11))
+        self.notice_label = tk.Label(root, text="", fg=config.SPACE_BLUE_FG, bg=root_bg, font=(config.FONT_ZH, 11))
         self.notice_label.pack(anchor="w", padx=12)
 
         result_wrapper = tk.Frame(root, bg=root_bg)
@@ -72,14 +72,15 @@ class GachaView(GradientFrame):
 
         self.detail_panel = ElementDetailPanel(result_wrapper, self.app)
         self.detail_panel.grid(row=0, column=1, sticky="ns", padx=(10, 0))
+        self.detail_panel.grid_remove()
         self.refresh_texts()
 
     def _style_button(self, button: tk.Button) -> None:
         button.configure(
-            bg="SystemButtonFace",
-            fg="SystemButtonText",
-            activebackground="SystemButtonFace",
-            activeforeground="SystemButtonText",
+            bg=config.BUTTON_BG,
+            fg=config.BUTTON_FG,
+            activebackground=config.BUTTON_ACTIVE_BG,
+            activeforeground=config.BUTTON_ACTIVE_FG,
             relief="raised",
             bd=1,
             cursor="hand2",
@@ -87,6 +88,7 @@ class GachaView(GradientFrame):
 
     def on_show(self) -> None:
         self._active = True
+        self.detail_panel.grid_remove()
         self.refresh_status()
         self._tick()
 
@@ -141,7 +143,7 @@ class GachaView(GradientFrame):
             text=self.app.tr("gacha_draw_count_label"),
             font=(config.FONT_ZH, 11),
             bg=config.SPACE_BLUE_BG,
-            fg="#111111",
+            fg=config.SPACE_BLUE_FG,
         )
         self.draw_count_title.pack(side="left")
         options = config.PAID_DRAW_OPTIONS if paid_mode else config.FREE_DRAW_OPTIONS
@@ -179,13 +181,13 @@ class GachaView(GradientFrame):
         card = tk.Frame(parent, width=80, height=80, bg=bg_color, bd=1, relief="solid")
         card.grid_propagate(False)
 
-        symbol = tk.Label(card, text=entry.element.symbol, bg=bg_color, fg="#111111", font=(config.FONT_EN, 16, "bold"))
+        symbol = tk.Label(card, text=entry.element.symbol, bg=bg_color, fg=config.ELEMENT_CARD_FG, font=(config.FONT_EN, 16, "bold"))
         symbol.place(relx=0.5, rely=0.42, anchor="center")
 
-        name = tk.Label(card, text=self.app.element_name(entry.element), bg=bg_color, fg="#111111", font=(config.FONT_ZH, 9))
+        name = tk.Label(card, text=self.app.element_name(entry.element), bg=bg_color, fg=config.ELEMENT_CARD_FG, font=(config.FONT_ZH, 9))
         name.place(relx=0.5, rely=0.83, anchor="center")
 
-        count = tk.Label(card, text=f"×{entry.count}", bg=bg_color, fg="#111111", font=(config.FONT_EN, 9, "bold"))
+        count = tk.Label(card, text=f"×{entry.count}", bg=bg_color, fg=config.ELEMENT_CARD_FG, font=(config.FONT_EN, 9, "bold"))
         count.place(relx=0.96, rely=0.97, anchor="se")
 
         clickable_widgets: list[tk.Widget] = [card, symbol, name, count]
@@ -196,6 +198,7 @@ class GachaView(GradientFrame):
 
         def on_click(_: tk.Event[tk.Misc]) -> None:
             owned_count = self.app.state.owned.get(entry.element.atomic_number, 0)
+            self.detail_panel.grid(row=0, column=1, sticky="ns", padx=(10, 0))
             self.detail_panel.show_element(entry.element, owned_count)
 
         for widget in clickable_widgets:
@@ -230,7 +233,7 @@ class GachaView(GradientFrame):
                 text=self.app.rarity_label(rarity),
                 font=(config.FONT_ZH, 12, "bold"),
                 bg=config.SPACE_BLUE_BG,
-                fg="#111111",
+                fg=config.SPACE_BLUE_FG,
             ).pack(anchor="w", pady=(0, 4))
 
             grid = tk.Frame(section, bg=config.SPACE_BLUE_BG)
@@ -252,7 +255,7 @@ class GachaView(GradientFrame):
                     current=self.app.state.ticket_count,
                     need=draw_count,
                 ),
-                fg="#8a2c2c",
+                fg=config.SPACE_BLUE_FG,
             )
             self.refresh_status()
             return
@@ -264,12 +267,13 @@ class GachaView(GradientFrame):
             now=self.app.time_provider(),
         )
         if not result.success:
-            self.notice_label.config(text=self.app.tr("insufficient_tickets", current=self.app.state.ticket_count, need=draw_count), fg="#8a2c2c")
+            self.notice_label.config(text=self.app.tr("insufficient_tickets", current=self.app.state.ticket_count, need=draw_count), fg=config.SPACE_BLUE_FG)
             return
 
         self._last_result = result
         self.app.persist()
-        self.notice_label.config(text="", fg="#225b27")
+        self.notice_label.config(text="", fg=config.SPACE_BLUE_FG)
+        self.detail_panel.grid_remove()
         self._render_grouped_results(result)
         self.refresh_status()
         self.app.check_completion_and_show(before_collected)

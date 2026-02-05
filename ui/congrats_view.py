@@ -66,18 +66,18 @@ class CongratsView(tk.Frame):
         super().__init__(parent, bg=config.SPACE_BLUE_BG)
         self.app = app
 
-        self.title_label = tk.Label(self, font=(config.FONT_ZH, 30, "bold"), bg=config.SPACE_BLUE_BG, fg="#111111")
+        self.title_label = tk.Label(self, font=(config.FONT_ZH, 30, "bold"), bg=config.SPACE_BLUE_BG, fg=config.SPACE_BLUE_FG)
         self.title_label.pack(pady=(36, 8))
 
-        self.subtitle_label = tk.Label(self, font=(config.FONT_ZH, 14), bg=config.SPACE_BLUE_BG, fg="#333333")
+        self.subtitle_label = tk.Label(self, font=(config.FONT_ZH, 14), bg=config.SPACE_BLUE_BG, fg=config.SPACE_BLUE_FG)
         self.subtitle_label.pack(pady=(0, 24))
 
-        self.stats_box = tk.LabelFrame(self, padx=18, pady=14, bg=config.SPACE_BLUE_BG, fg="#111111")
+        self.stats_box = tk.LabelFrame(self, padx=18, pady=14, bg=config.SPACE_BLUE_BG, fg=config.SPACE_BLUE_FG)
         self.stats_box.pack(fill="x", padx=80)
 
         self.stats_labels: list[tk.Label] = []
         for _ in range(8):
-            label = tk.Label(self.stats_box, anchor="w", font=(config.FONT_ZH, 12), bg=config.SPACE_BLUE_BG, fg="#111111")
+            label = tk.Label(self.stats_box, anchor="w", font=(config.FONT_ZH, 12), bg=config.SPACE_BLUE_BG, fg=config.SPACE_BLUE_FG)
             label.pack(fill="x", pady=2)
             self.stats_labels.append(label)
 
@@ -86,6 +86,14 @@ class CongratsView(tk.Frame):
             font=(config.FONT_ZH, 12),
             width=16,
             command=lambda: self.app.show_frame("MainMenu"),
+        )
+        self.back_button.configure(
+            bg=config.BUTTON_BG,
+            fg=config.BUTTON_FG,
+            activebackground=config.BUTTON_ACTIVE_BG,
+            activeforeground=config.BUTTON_ACTIVE_FG,
+            relief="raised",
+            bd=1,
         )
         self.back_button.pack(pady=30)
 
