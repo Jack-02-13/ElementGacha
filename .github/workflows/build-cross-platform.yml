@@ -1,0 +1,60 @@
+name: Build Desktop Packages
+
+on:
+  workflow_dispatch:
+  push:
+    branches: ["main", "master"]
+
+jobs:
+  build:
+    name: Build (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [windows-latest, macos-latest]
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+
+      - name: Install dependencies
+        shell: bash
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+
+      - name: Build one-file package
+        shell: bash
+        run: |
+          pyinstaller --noconfirm ElementGacha_OneFile.spec
+
+      - name: Build one-folder package
+        shell: bash
+        run: |
+          pyinstaller --noconfirm ElementGacha.spec
+
+      - name: Copy docs into one-folder package
+        shell: bash
+        run: |
+          cp README_GAME.md dist/ElementGacha/README_GAME.md
+          cp README_LICENSE.md dist/ElementGacha/README_LICENSE.md
+
+      - name: Upload one-file artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ElementGacha-OneFile-${{ matrix.os }}
+          path: |
+            dist/ElementGacha_OneFile*
+
+      - name: Upload one-folder artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ElementGacha-Folder-${{ matrix.os }}
+          path: |
+            dist/ElementGacha/**

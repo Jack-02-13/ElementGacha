@@ -1,0 +1,9 @@
+{
+  "python.defaultInterpreterPath": "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python313\\python.exe",
+  "python.terminal.activateEnvironment": true,
+  "code-runner.runInTerminal": true,
+  "code-runner.executorMap": {
+    "python": "C:\\Users\\USER\\AppData\\Local\\Programs\\Python\\Python313\\python.exe -u"
+  }
+}
+

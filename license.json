@@ -1,0 +1,10 @@
+{
+  "v": 1,
+  "product": "ElementGacha",
+  "license_id": "20a217d6-54a6-4161-acfe-73b6155b9710",
+  "issued_at": "2026-02-05T07:51:49+00:00",
+  "features": {
+    "paid": true
+  },
+  "sig": "a46aabIXoUcjlwspSPunm1IDYOxRTTqer/pI8G2u8/VrF0yr/2OuKDLcOnd0QhezXZUvAUru9HgZD3CenBkvBw=="
+}
